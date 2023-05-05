@@ -1,7 +1,7 @@
+from django.contrib.auth.decorators import user_passes_test
 from django.urls import reverse_lazy
 from django.conf import settings
 
-"""
 #version 1
 def admin_code_entered(function=None):
     actual_decorator = user_passes_test(
@@ -12,4 +12,3 @@ def admin_code_entered(function=None):
     if function:
         return actual_decorator(function)
     return actual_decorator
-"""
