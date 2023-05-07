@@ -1,9 +1,10 @@
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django.db import transaction
-from .models import User, Admin, Customer, Employee
+from .models import User, Admin, Customer, Employee, CustomerId
 from django.conf import settings
 
+"""
 #the user will have to enter the admin code inorder to register as admin
 class AdminCodeForm(forms.Form):
     admin_code = forms.CharField(max_length=50)
@@ -12,9 +13,11 @@ class AdminCodeForm(forms.Form):
         if admin_code != settings.ADMIN_CODE:
             raise forms.ValidationError('Invalid admin code')
         return admin_code
+"""
 
 #admin registration form
 class AdminSignUpForm(UserCreationForm):
+    admin_code = forms.CharField(max_length=50)
     email = forms.EmailField(required=True)
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
@@ -30,6 +33,13 @@ class AdminSignUpForm(UserCreationForm):
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError('This email address is already in use.')
         return email
+    
+    #verify admin code
+    def clean_admin_code(self):
+        admin_code = self.cleaned_data.get('admin_code')
+        if admin_code != settings.ADMIN_CODE:
+            raise forms.ValidationError('Invalid admin code')
+        return admin_code
     
     @transaction.atomic
     def save(self):
@@ -48,6 +58,7 @@ class AdminSignUpForm(UserCreationForm):
         return user
     
 class CustomerSignUpForm(UserCreationForm):
+    customer_id = forms.IntegerField(required=True)
     email = forms.EmailField(required=True)
     first_name = forms.CharField(required=True)
     last_name = forms.CharField(required=True)
@@ -57,11 +68,23 @@ class CustomerSignUpForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
     
+    #verify email
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError('This email address is already in use.')
         return email
+    
+    #verify customer id
+    def clean_customer_id(self):
+        customer_id = self.cleaned_data.get('customer_id')
+        if not CustomerId.objects.filter(customer_id=customer_id).exists():
+            raise forms.ValidationError('Invalid Customer ID')
+        
+        if Customer.objects.filter(customer_id=customer_id).exists():
+            raise forms.ValidationError('This customer ID is already in use.')
+        
+        return customer_id
     
     @transaction.atomic
     def save(self):
@@ -72,6 +95,7 @@ class CustomerSignUpForm(UserCreationForm):
         user.last_name = self.cleaned_data.get('last_name')
         user.save()
         customer = Customer.objects.create(user=user)
+        customer.customer_id= self.cleaned_data.get('customer_id')
         customer.phone_number=self.cleaned_data.get('phone_number')
         customer.location=self.cleaned_data.get('location')
         customer.save()

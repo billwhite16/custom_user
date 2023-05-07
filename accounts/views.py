@@ -1,17 +1,15 @@
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import redirect, render
 from django.contrib import messages
-from . forms import AdminCodeForm, AdminSignUpForm, CustomerSignUpForm, EmployeeSignUpForm
+from . forms import AdminSignUpForm, CustomerSignUpForm, EmployeeSignUpForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.conf import settings
-from .decorators import admin_code_entered
-
 
 #register general view
 def register(request):
     return render(request, 'register.html')
 
-
+"""
 #version1-the admin registration validation view
 def admin_validate(request):
     form = AdminCodeForm(request.POST or None)
@@ -21,6 +19,7 @@ def admin_validate(request):
         else:
             form.add_error('admin_code', 'Incorrect admin code.')
     return render(request, 'admin_code.html', {'form': form})
+"""
 
 #@admin_code_entered
 def admin_register(request):

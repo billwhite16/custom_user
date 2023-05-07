@@ -21,27 +21,12 @@
                   <h2>Admin Register</h2>
                 </div>
                 <div class="card-body">
-                    <form class="my-class", action="{% url 'admin_register' %}" method="POST" novalidate>
+                    <form class="my-class" action="{% url 'admin_register' %}"method="POST" novalidate>
                       {% csrf_token %}
-                      <!--
-                          {% for field in form.visible_fields %}
-                           <div class="form-group">
-                               {{ field.label_tag }}
-                                  {% render_field field class="form-control" %}
-                                    {% for error in field.errors %}
-                                      <span style="color:red">{{ error }}</span>
-                                    {% endfor %}
-                          {% endfor %}
-                             <input type="submit" value="Register" class="btn btn-block btn-primary">
-                           </div>
-                          -->
-                        
                            <div class="form-group">
                               {{form|crispy}}
                               <input type="submit" value="Register" class="btn btn-block btn-primary">
                            </div>
-                        
-                          
                     </form>
                  </div>
                     </div>   
